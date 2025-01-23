@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "_user")
+@Table(name = "user")
 public class User implements UserDetails {
 
   @Id
@@ -27,9 +27,10 @@ public class User implements UserDetails {
   private String password;
   @Enumerated(EnumType.STRING)
   private Role role;
-
   @OneToMany(mappedBy = "user")
+  @ToString.Exclude
   private List<Token> tokens;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return role.getAuthorities();
@@ -44,7 +45,6 @@ public class User implements UserDetails {
   public String getUsername() {
     return email;
   }
-
   @Override
   public boolean isAccountNonExpired() {
     return true;

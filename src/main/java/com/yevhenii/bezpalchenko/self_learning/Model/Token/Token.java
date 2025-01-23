@@ -2,10 +2,7 @@ package com.yevhenii.bezpalchenko.self_learning.Model.Token;
 
 import com.yevhenii.bezpalchenko.self_learning.Model.User.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -28,7 +25,10 @@ public class Token {
 
   public boolean expired;
 
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
+  @ToString.Exclude
   public User user;
+
 }
