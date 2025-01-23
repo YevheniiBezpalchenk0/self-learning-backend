@@ -28,22 +28,23 @@ public class JwtService {
   public String extractUsername(String token) {
     return extractClaim(token, Claims::getSubject);
   }
-
+  public Integer extractUserId(String token) {
+    Claims claims = extractAllClaims(token);
+    System.out.println("claims: " + claims);
+    return claims.get("userId", Integer.class);
+  }
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
     final Claims claims = extractAllClaims(token);
     return claimsResolver.apply(claims);
   }
 
-  public String generateToken(UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails);
+  public String generateToken(UserDetails userDetails, int userId) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("userId", userId); // Добавление userId в claims
+    System.out.println(claims);
+    return buildToken(claims, userDetails, jwtExpiration);
   }
 
-  public String generateToken(
-      Map<String, Object> extraClaims,
-      UserDetails userDetails
-  ) {
-    return buildToken(extraClaims, userDetails, jwtExpiration);
-  }
 
   public String generateRefreshToken(
       UserDetails userDetails
@@ -58,11 +59,11 @@ public class JwtService {
   ) {
     return Jwts
             .builder()
-            .setClaims(extraClaims)
-            .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+            .setClaims(new HashMap<>(extraClaims)) // Создаем копию, чтобы избежать перезаписи
+            .setSubject(userDetails.getUsername()) // Добавляем стандартное поле subject
+            .setIssuedAt(new Date(System.currentTimeMillis())) // Время выпуска токена
+            .setExpiration(new Date(System.currentTimeMillis() + expiration)) // Время истечения
+            .signWith(getSignInKey(), SignatureAlgorithm.HS256) // Подпись токена
             .compact();
   }
 

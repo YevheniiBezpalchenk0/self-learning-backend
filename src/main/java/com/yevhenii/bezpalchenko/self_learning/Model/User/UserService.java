@@ -1,6 +1,10 @@
 package com.yevhenii.bezpalchenko.self_learning.Model.User;
 
+import com.yevhenii.bezpalchenko.self_learning.DTO.UserDTO;
+import com.yevhenii.bezpalchenko.self_learning.Exception.ObjectNotFoundException;
+import com.yevhenii.bezpalchenko.self_learning.config.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +17,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final JwtService jwtService;
+    private final ModelMapper modelMapper;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -31,5 +37,12 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+    }
+
+    public UserDTO findByToken(String token) {
+        String userEmail = jwtService.extractUsername(token);
+        User user = repository.findByEmail(userEmail)
+                .orElseThrow(() -> new ObjectNotFoundException("User with email " + userEmail + " not found"));
+        return modelMapper.map(user, UserDTO.class);
     }
 }

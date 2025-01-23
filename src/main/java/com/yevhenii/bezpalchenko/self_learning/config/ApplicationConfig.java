@@ -3,6 +3,7 @@ package com.yevhenii.bezpalchenko.self_learning.config;
 import com.yevhenii.bezpalchenko.self_learning.Model.User.UserRepository;
 import com.yevhenii.bezpalchenko.self_learning.auditing.ApplicationAuditAware;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -20,6 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
   private final UserRepository repository;
+  @Bean
+  public ModelMapper modelMapper() {
+    return new ModelMapper();
+  }
 
   @Bean
   public UserDetailsService userDetailsService() {
