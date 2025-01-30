@@ -41,4 +41,5 @@ public class UserTopic {
 
     @OneToMany(mappedBy = "userTopic", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLesson> userLessons;
+
 }

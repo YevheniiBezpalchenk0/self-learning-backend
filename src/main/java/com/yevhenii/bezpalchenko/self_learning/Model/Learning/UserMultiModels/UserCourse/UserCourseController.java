@@ -31,7 +31,20 @@ public class UserCourseController {
         }
         return ResponseEntity.ok(userCourses);
     }
-
+    @GetMapping("/my")
+    public ResponseEntity<List<CourseDTO>> getMyCourses(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращаем 401, если токен не передан
+        }
+        String token = authHeader.substring(7);
+        List<CourseDTO> userCourses = service.getMy(token);
+        if (userCourses.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        log.info("My user Courses: " + userCourses);
+        return ResponseEntity.ok(userCourses);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<UserCourseDTO> getUserCourseById(@PathVariable int id) {
         Optional<UserCourseDTO> userCourse = service.getById(id);
@@ -39,17 +52,17 @@ public class UserCourseController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<UserCourseDTO> createUserCourse(@RequestBody CourseDTO courseDTO, HttpServletRequest request) {
+    @PostMapping("/{courseId}")
+    public ResponseEntity<UserCourseDTO> createUserCourse(@PathVariable int courseId, HttpServletRequest request) {
         try {
             String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращаем 401, если токен не передан
             }
 
-            // Извлекаем токен из заголовка
             String token = authHeader.substring(7);
-            UserCourseDTO createdUserCourse = service.create(courseDTO, token);
+            UserCourseDTO createdUserCourse = service.create(courseId, token);
+            log.info("created user course: " + createdUserCourse);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUserCourse);
         } catch (EntityAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // Если связь уже существует
