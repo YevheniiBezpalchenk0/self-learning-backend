@@ -10,7 +10,6 @@ import lombok.*;
 @Setter
 @Getter
 @Entity
-@ToString
 @Table(name = "lesson")
 public class Lesson {
     @Id
@@ -26,4 +25,12 @@ public class Lesson {
     @JoinColumn(name = "test_id", referencedColumnName = "id")
     private Test test;
 
+    @Override
+    public String toString() {
+        return "Lesson{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

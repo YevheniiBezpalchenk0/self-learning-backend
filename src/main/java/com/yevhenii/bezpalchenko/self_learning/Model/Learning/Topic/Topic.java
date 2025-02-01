@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-@ToString
+@ToString(exclude = "course")
 @Table(name = "topic")
 public class Topic {
     @Id
@@ -26,4 +26,5 @@ public class Topic {
     @JoinColumn(name = "course_id", nullable = false)
     @JsonIgnore
     private Course course;
+
 }

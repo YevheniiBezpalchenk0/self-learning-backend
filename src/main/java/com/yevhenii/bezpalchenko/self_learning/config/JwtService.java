@@ -30,7 +30,6 @@ public class JwtService {
   }
   public Integer extractUserId(String token) {
     Claims claims = extractAllClaims(token);
-    System.out.println("claims: " + claims);
     return claims.get("userId", Integer.class);
   }
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -40,8 +39,7 @@ public class JwtService {
 
   public String generateToken(UserDetails userDetails, int userId) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("userId", userId); // Добавление userId в claims
-    System.out.println(claims);
+    claims.put("userId", userId);
     return buildToken(claims, userDetails, jwtExpiration);
   }
 
